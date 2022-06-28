@@ -114,7 +114,6 @@ const sightseeingList = ref([]);
 const props = defineProps(['sightseeingList']);
 watchEffect(() => {
   sightseeingList.value = props.sightseeingList;
-  console.log('ScenicSpot', sightseeingList.value);
 });
 
 </script>
