@@ -16,6 +16,7 @@ export default async () => {
     const res = await axios.post(authUrl, body, { headers });
     const { access_token: accessToken, token_type: tokenType, expires_in: expiresIn } = res.data;
     document.cookie = `accessToken=${`${tokenType} ${accessToken}`}; max-age=${expiresIn};`;
+    axios.defaults.headers.common.Authorization = document.cookie.replace(/(?:(?:^|.*;\s*)accessToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
   } catch (error) {
     throw new Error(`[getAuthorizationHeader] error : ${error.message}`);
   }

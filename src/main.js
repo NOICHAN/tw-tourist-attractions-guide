@@ -12,16 +12,14 @@ import App from './App.vue';
 import router from './router';
 
 const app = createApp(App);
-app.config.globalProperties.apiUrl = `${process.env.VUE_APP_API}/v2/`;
-const axiosInstance = axios.create({
-  baseURL: `${process.env.VUE_APP_API}/v2/`,
-  headers: { authorization: document.cookie.replace(/(?:(?:^|.*;\s*)accessToken\s*=\s*([^;]*).*$)|^.*$/, '$1') },
-});
+
+axios.defaults.baseURL = `${process.env.VUE_APP_API}/v2/`;
+axios.defaults.headers.common.Authorization = document.cookie.replace(/(?:(?:^|.*;\s*)accessToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
 app.use(router);
-app.use(VueAxios, { axiosInstance });
+app.use(VueAxios, axios);
 app.use(VueSweetalert2);
-app.provide('axiosInstance', app.config.globalProperties.axiosInstance);
+app.provide('axios', app.config.globalProperties.axios);
 
 app.component('VLoading', Loading);
 

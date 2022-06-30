@@ -388,7 +388,7 @@ import {
 } from 'vue';
 import { useRouter } from 'vue-router';
 
-const axiosInstance = inject('axiosInstance');
+const axios = inject('axios');
 const swal = inject('$swal');
 
 const selectRegion = ref(null);
@@ -408,7 +408,7 @@ const allCity = ref([]);
 
 const getAccessTokenByCookie = () => document.cookie.replace(/(?:(?:^|.*;\s*)accessToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
-const getScenicSpotData = async () => {
+const getTourismData = async () => {
   let City = '';
   if (currentCity.value.CityID) {
     City = `/${currentCity.value.City}`;
@@ -420,7 +420,7 @@ const getScenicSpotData = async () => {
   };
   config.params.$top = (displayPages + 1) * pagesPerPage;
   config.params.$skip = (currentPage.value - 1) * pagesPerPage;
-  const { data } = await axiosInstance.get(`Tourism/${currentType.value}${City}`, config);
+  const { data } = await axios.get(`Tourism/${currentType.value}${City}`, config);
   if (data.length > pagesPerPage * displayPages) {
     isNext.value = true;
   } else {
@@ -464,14 +464,13 @@ const splitPagination = (processedData) => {
 };
 
 const initial = async () => {
-  const scenicSpotData = await getScenicSpotData();
+  const scenicSpotData = await getTourismData();
   const processedData = replaceDefaultImageIfImageNotExists(scenicSpotData);
-  // eslint-disable-next-line no-unused-vars
   splitPagination(processedData);
 };
 
 const getAllCity = async () => {
-  const { data } = await axiosInstance.get('Basic/City');
+  const { data } = await axios.get('Basic/City');
   allCity.value = data;
 };
 
@@ -549,9 +548,10 @@ onMounted(async () => {
   try {
     isLoading.value = true;
     window.addEventListener('scroll', fixNav);
-    const accessToken = getAccessTokenByCookie();
+    let accessToken = getAccessTokenByCookie();
     if (accessToken === '') {
       await getAuthorizationHeader();
+      accessToken = getAccessTokenByCookie();
     }
     await getAllCity();
     await initial();
